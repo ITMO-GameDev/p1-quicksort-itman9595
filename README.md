@@ -1,2 +1,1 @@
-# p1-quicksort-itman9595
-# p1-quicksort-itman9595
+Муратбек Бауыржан, C4122
