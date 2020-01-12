@@ -23,8 +23,8 @@ public:
 		typedef T* pointer;
 		typedef Array& parent;
 		Iterator(parent par) : par_(par) { itNextElement = 0; };
-	private:
 		parent par_;
+	private:
 		int itNextElement;
 	public:
 
@@ -64,7 +64,7 @@ public:
 		}
 
 		bool hasPrev() const {
-			if (itNextElement > 1)
+			if (itNextElement > -1)
 				return true;
 			else
 				return false;
@@ -149,7 +149,75 @@ public:
 	Iterator iterator() {
 		return it;
 	}
+
+	Iterator reversed_iterator() {
+		it.toIndex(it.par_.size() - 1);
+		return it;
+	}
 };
+
+struct ContainersTest : testing::Test {
+	Array<int> a = Array<int>(10);
+	ContainersTest() {
+	}
+};
+
+// Проверка на доступность значения через индекс 3 в массиве
+TEST_F(ContainersTest, checkIfValueIsAccessibleViaOperator_1) {	
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	EXPECT_EQ(3, a[3]);
+}
+
+// Проверка на доступность значения через индекс 2 в массиве
+TEST_F(ContainersTest, checkIfValueIsAccessibleViaOperator_2) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	EXPECT_EQ(0, a[2]);
+}
+
+// Проверка на доступность значения в следующем индексе итератора массива
+TEST_F(ContainersTest, checkIfIteratorHasNextValue_1) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	auto it = a.iterator();
+	EXPECT_EQ(true, it.hasNext());
+}
+
+// Проверка на доступность значения в следующем индексе итератора массива, и в случае, если индекс будет равен размеру массива
+TEST_F(ContainersTest, checkIfIteratorHasNextValue_2) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	auto it = a.iterator();
+	it.toIndex(a.size());
+	EXPECT_EQ(true, it.hasNext());
+}
+
+// Проверка на доступность значения в предыдущем индексе итератора массива
+TEST_F(ContainersTest, checkIfIteratorHasPrevValue_1) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	auto it = a.reversed_iterator();
+	EXPECT_EQ(true, it.hasPrev());
+}
+
+// Проверка на доступность значения в предыдущем индексе итератора массива, и в случае, если индекс будет равен "-1"
+TEST_F(ContainersTest, checkIfIteratorHasPrevValue_2) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	auto it = a.reversed_iterator();
+	it.toIndex(-1);
+	EXPECT_EQ(true, it.hasPrev());
+}
+
+// Проверка на равенство значения в субиндексе массива, здесь массив в индексе 3 должен быть равен 3, но после устранения значения на позиции 3, массив начнёт сдвигаться
+TEST_F(ContainersTest, checkForArrayChange) {
+	for (int i = 0; i < a.size(); i++)
+		a.insert(i);
+	a.remove(3);
+	a.remove(6);
+	EXPECT_EQ(4, a[3]);
+}
 
 int main(int argc, char *argv[]) {
 	Array<int> a = Array<int>(10);
@@ -175,6 +243,6 @@ int main(int argc, char *argv[]) {
 
 	for (auto i = a.iterator(); i.hasNext(); i.next())
 		cout << i.get() << endl;
-	/*testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();*/
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
